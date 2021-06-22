@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const {auth} = require('../middleware/auth');
-const {User} = require('../db-models/user');
+//const {User} = require('../db-models/user');
+const {User} = require('../app-models/user');
+const {UserColleciton} = require('../fb-models/user-collection');
 
 router.get('/:email',auth ,async (req,res) => {
     let {email} = req.params;
@@ -24,17 +26,21 @@ router.get('/:email',auth ,async (req,res) => {
 });
 
 router.post('/',async (req,res,next) => {
-    let {email,role} = req.body;
+    let {user} = req.body;
+    let newUser = new User(user);
+    let users = new UserColleciton();
     try{
+        /*
         await User.create({
             email            
         });
-        
-        let user = await User.findByEmail(email);
+        */
+        await users.createUser(newUser);
+        let createdUser = await users.GetUserByEmail(newUser.email);
         res.status(200);
         return res.json({
             message:'User created',
-            user:user
+            user:createdUser.serialize()
         });
     }
     catch(e){

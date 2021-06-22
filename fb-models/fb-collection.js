@@ -22,6 +22,22 @@ class FirebaseCollection{
             throw e;
         }
     }
+
+    /**
+     * convert provided firestore docs to array of objects
+     * @param {*} docs 
+     * @returns 
+     */
+    mapDocumentsToArray(docs){
+        let documents = [];
+        docs.forEach(doc => {
+            let document = doc.data();
+            document.id = doc.id;
+            documents.push(document);
+        });
+
+        return documents;
+    }
 }
 
 module.exports = {FirebaseCollection};
