@@ -5,16 +5,17 @@ const {auth} = require('../middleware/auth');
 const {User} = require('../app-models/user');
 const {UserColleciton} = require('../fb-models/user-collection');
 
-router.get('/:email',auth ,async (req,res) => {
+router.get('/:email',auth ,async (req,res,next) => {
     let {email} = req.params;
     try{
         let users = new UserColleciton();
         let user = await users.getUserByEmail(email);
-        let message = user ? 'Found User' : 'No User';
+        let message = user.eamil ? 'Found User' : 'No User';
+        user = user.email ? user.serialize() : null; 
         res.status(200);
         return res.json({
             message,
-            user:user.serialize()
+            user
         });
     }
     catch(e){
