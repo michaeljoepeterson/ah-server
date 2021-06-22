@@ -4,11 +4,11 @@ const {auth} = require('../middleware/auth');
 const {User} = require('../db-models/user');
 
 router.get('/:email',auth ,async (req,res) => {
-    res.status(200);
     let {email} = req.params;
     try{
         let user = await User.findByEmail(email);
         let message = user ? 'Found User' : 'No User';
+        res.status(200);
         return res.json({
             message,
             user
