@@ -8,12 +8,13 @@ const {UserColleciton} = require('../fb-models/user-collection');
 router.get('/:email',auth ,async (req,res) => {
     let {email} = req.params;
     try{
-        let user = await User.findByEmail(email);
+        let users = new UserColleciton();
+        let user = await users.getUserByEmail(email);
         let message = user ? 'Found User' : 'No User';
         res.status(200);
         return res.json({
             message,
-            user
+            user:user.serialize()
         });
     }
     catch(e){
@@ -36,7 +37,7 @@ router.post('/',async (req,res,next) => {
         });
         */
         await users.createUser(newUser);
-        let createdUser = await users.GetUserByEmail(newUser.email);
+        let createdUser = await users.getUserByEmail(newUser.email);
         res.status(200);
         return res.json({
             message:'User created',

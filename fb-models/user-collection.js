@@ -28,7 +28,7 @@ class UserColleciton extends FirebaseCollection{
      * @param {string} email 
      * @returns {User}
      */
-    async GetUserByEmail(email){
+    async getUserByEmail(email){
         try{
             let userDoc = await this.db.collection(this.userCollection).doc(email).get();
             let user = new User(userDoc.data());
