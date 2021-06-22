@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const {auth} = require('../middleware/auth');
-//const {User} = require('../db-models/user');
 const {User} = require('../app-models/user');
 const {UserColleciton} = require('../fb-models/user-collection');
 

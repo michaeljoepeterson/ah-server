@@ -15,7 +15,6 @@
     "express": "^4.17.1",
     "express-rate-limit": "^5.2.6",
     "firebase-admin": "^9.9.0",
-    "mongoose": "^5.12.14",
     "node": "^16.3.0"
   }
 }
