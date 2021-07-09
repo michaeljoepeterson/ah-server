@@ -2,6 +2,7 @@ const express = require('express');
 const rateLimit = require("express-rate-limit");
 const router = express.Router();
 const {router: userRouter} = require('./user-router');
+const {router: folderRouter} = require('./folder-router');
 const {UserColleciton} = require('../fb-models/user-collection');
 
 const limiter = rateLimit({
@@ -9,6 +10,7 @@ const limiter = rateLimit({
     max: 30,
     message:'An error occured.'
 });
+router.use(limiter);
 router.get('/test',async(req,res,next) => {
     try{
         let db = new UserColleciton();
@@ -25,7 +27,7 @@ router.get('/test',async(req,res,next) => {
         next();
     }
 })
-router.use(limiter);
 router.use('/users',userRouter);
+router.use('/folders',folderRouter);
 
 module.exports = {router};

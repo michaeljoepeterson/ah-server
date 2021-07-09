@@ -31,11 +31,6 @@ router.post('/',async (req,res,next) => {
     let newUser = new User(user);
     let users = new UserColleciton();
     try{
-        /*
-        await User.create({
-            email            
-        });
-        */
         await users.createUser(newUser);
         let createdUser = await users.getUserByEmail(newUser.email);
         res.status(200);

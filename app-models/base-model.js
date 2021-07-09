@@ -22,7 +22,7 @@ class BaseModel{
             if(keyLookup[key]){
                 this[key] = data[key];
             }
-        })
+        });
     }
 
     /**
@@ -33,8 +33,10 @@ class BaseModel{
         let keys = Object.keys(this);
         let data = {};
         keys.forEach(key => {
-            data[key] = this[key];
-        })
+            if(typeof this[key] !== 'function'){
+                data[key] = this[key];
+            }
+        });
         return data;
     }
 }

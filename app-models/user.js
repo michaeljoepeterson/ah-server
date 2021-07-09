@@ -1,5 +1,8 @@
 const {BaseModel} = require('./base-model');
 
+/**
+ * base model to represent a user
+ */
 class User extends BaseModel{
     constructor(data){
         super();

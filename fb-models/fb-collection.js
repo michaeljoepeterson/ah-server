@@ -38,6 +38,16 @@ class FirebaseCollection{
 
         return documents;
     }
+
+    handleize(name){
+        let handle = name.replace(/ /g, '-');
+        return handle;
+    }
+
+    getNameFromHandle(handle){
+        let name = handle.replace(/\-/g,' ');
+        return name;
+    }
 }
 
 module.exports = {FirebaseCollection};
