@@ -8,6 +8,17 @@ class FolderColleciton extends FirebaseCollection{
         this.collection = 'folders';
     }
 
+    initFolder(folder){
+        if(!folder.subFolders){
+            folder.subFolders = [];
+        }
+        if(!folder.files){
+            folder.files = [];
+        }
+
+        return folder;
+    }
+
     /**
      * create a new folder
      * @param {Folder} folder 
@@ -17,12 +28,7 @@ class FolderColleciton extends FirebaseCollection{
             let data = folder.serialize();
             let newFolder = await this.db.collection(this.collection).add(data);
             data.id = newFolder.id;
-            if(!data.subFolders){
-                data.subFolders = [];
-            }
-            if(!data.files){
-                data.files = [];
-            }
+            data = this.initFolder(data);
 
             await this.db.collection(this.collection).doc(data.id).set(data,{merge:true});
             return data;
@@ -39,14 +45,15 @@ class FolderColleciton extends FirebaseCollection{
         }
         
         pathIndex = !pathIndex && pathIndex !== 0 ? 0 : pathIndex;
-        let currentPath = splitPath[pathIndex];
         
         if(pathIndex === splitPath.length -1){
             return folder;
         }
         else{
+            pathIndex++
+            let currentPath = splitPath[pathIndex];
             let subFolder = folder.subFolders.find(f => f.id === currentPath);
-            return this.findTargetSubFolder(subFolder,splitPath,pathIndex++);
+            return this.findTargetSubFolder(subFolder,splitPath,pathIndex);
         }
     }
 
@@ -58,6 +65,7 @@ class FolderColleciton extends FirebaseCollection{
     async createSubFolder(subFolder,path){
         let splitPath = path.split('/');
         let rootFolderId = splitPath[0];
+        subFolder = this.initFolder(subFolder);
         try{
             let query = await this.db.collection(this.collection).where('id','==',rootFolderId);
             let folderData = await query.get();
