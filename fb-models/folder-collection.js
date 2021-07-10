@@ -15,9 +15,10 @@ class FolderColleciton extends FirebaseCollection{
     async createFolder(folder){
         try{
             let data = folder.serialize();
-            let handle = this.handleize(data.name);
-            data.id = handle;
-            await this.db.collection(this.collection).doc(handle).set(data,{merge:true});
+            let newFolder = await this.db.collection(this.collection).add(data);
+            data.id = newFolder.id;
+            await this.db.collection(this.collection).doc(data.id).set(data,{merge:true});
+            return data;
         }
         catch(e){
             console.log('error creating user: ',e);

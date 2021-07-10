@@ -10,8 +10,8 @@ class Folder extends BaseModel{
         this.name = null;
         this.owner = null;
         this.id = null;
-        this.files = null;
-        this.subFolders = null;
+        this.files = [];
+        this.subFolders = [];
 
         if(data){
             this.initFolder(data);

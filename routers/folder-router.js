@@ -33,10 +33,11 @@ router.post('/folder',async (req,res,next) => {
         let newFolder = new Folder(folder);
         newFolder.owner = req.userData.email;
         let folderDb = new FolderColleciton();
-        await folderDb.createFolder(newFolder);
+        createdFolder = await folderDb.createFolder(newFolder);
         res.status(200);
         return res.json({
-            message:'Folder created'
+            message:'Folder created',
+            folder:createdFolder
         });
     }
     catch(e){
