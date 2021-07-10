@@ -41,12 +41,35 @@ router.post('/folder',async (req,res,next) => {
         });
     }
     catch(e){
-        let message = 'Error creating user';
+        let message = 'Error creating folder';
         console.warn(message,e);
         res.err = e;
         res.errMessage = message;
         next();
     }
 });
+
+router.post('/subfolder',async (req,res,next) => {
+    let {folder,path} = req.body; 
+
+    try{
+        let newFolder = new Folder(folder);
+        newFolder.owner = req.userData.email;
+        let folderDb = new FolderColleciton();
+        createdFolder = await folderDb.createSubFolder(newFolder,path);
+        res.status(200);
+        return res.json({
+            message:'Sub Folder created',
+            folder:createdFolder
+        });
+    }
+    catch(e){
+        let message = 'Error creating subfolder';
+        console.warn(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+})
 
 module.exports = {router};

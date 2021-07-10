@@ -10,24 +10,73 @@ class FolderColleciton extends FirebaseCollection{
 
     /**
      * create a new folder
-     * @param {*} folder 
+     * @param {Folder} folder 
      */
     async createFolder(folder){
         try{
             let data = folder.serialize();
             let newFolder = await this.db.collection(this.collection).add(data);
             data.id = newFolder.id;
+            if(!data.subFolders){
+                data.subFolders = [];
+            }
+            if(!data.files){
+                data.files = [];
+            }
+
             await this.db.collection(this.collection).doc(data.id).set(data,{merge:true});
             return data;
         }
         catch(e){
-            console.log('error creating user: ',e);
+            console.log('error creating folder: ',e);
             throw e;
         }
     }
+    
+    findTargetSubFolder(folder,splitPath,pathIndex){
+        if(splitPath.length === 1){
+            return folder;
+        }
+        
+        pathIndex = !pathIndex && pathIndex !== 0 ? 0 : pathIndex;
+        let currentPath = splitPath[pathIndex];
+        
+        if(pathIndex === splitPath.length -1){
+            return folder;
+        }
+        else{
+            let subFolder = folder.subFolders.find(f => f.id === currentPath);
+            return this.findTargetSubFolder(subFolder,splitPath,pathIndex++);
+        }
+    }
 
-    async createSubFolder(folder){
+    /**
+     * create a specified sub folder for a folder
+     * @param {Folder} subFolder 
+     * @param {string} path path to place the folder in format parentId/subfolder1/...
+     */
+    async createSubFolder(subFolder,path){
+        let splitPath = path.split('/');
+        let rootFolderId = splitPath[0];
+        try{
+            let query = await this.db.collection(this.collection).where('id','==',rootFolderId);
+            let folderData = await query.get();
+            let rootFolder = folderData.docs[0].data();
+            let updatedFolder = new Folder(rootFolder);
+            let targetSubfolder = this.findTargetSubFolder(updatedFolder,splitPath,0);
+            targetSubfolder.folderCount += 1;
+            subFolder.id = this.handleize(`${subFolder.name}::${targetSubfolder.folderCount}`);
+            targetSubfolder.subFolders.push(subFolder);
 
+            let updatedFolderData = updatedFolder.serialize();
+            updatedFolderData = JSON.parse(JSON.stringify(updatedFolderData));
+            await this.db.collection(this.collection).doc(updatedFolderData.id).set(updatedFolderData,{merge:true});
+            return updatedFolder;
+        }
+        catch(e){
+            console.log('error creating sub folder: ',e);
+            throw e;
+        }
     }
     
     async createFile(file){

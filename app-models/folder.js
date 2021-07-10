@@ -10,8 +10,16 @@ class Folder extends BaseModel{
         this.name = null;
         this.owner = null;
         this.id = null;
-        this.files = [];
-        this.subFolders = [];
+        this.files = null;
+        this.subFolders = null;
+        /**
+         * track folders added combined with folder handle to get unique id
+         */
+        this.folderCount = 0;
+        /**
+         * track files added combined with file handle to get unique id
+         */
+        this.fileCount = 0;
 
         if(data){
             this.initFolder(data);
