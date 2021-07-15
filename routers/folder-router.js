@@ -3,6 +3,7 @@ const router = express.Router();
 const {auth} = require('../middleware/auth');
 const {Folder} = require('../app-models/folder');
 const {FolderColleciton} = require('../fb-models/folder-collection');
+const { PatientFile } = require('../app-models/patientFile');
 
 router.use(auth);
 
@@ -70,6 +71,28 @@ router.post('/subfolder',async (req,res,next) => {
         res.errMessage = message;
         next();
     }
-})
+});
+
+router.post('/file',async (req,res,next) => {
+    let {file,path} = req.body; 
+
+    try{
+        let newFile = new PatientFile(file);
+        let folderDb = new FolderColleciton();
+        createdFolder = await folderDb.createFile(newFile,path);
+        res.status(200);
+        return res.json({
+            message:'File created',
+            folder:createdFolder
+        });
+    }
+    catch(e){
+        let message = 'Error creating subfolder';
+        console.warn(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
 
 module.exports = {router};

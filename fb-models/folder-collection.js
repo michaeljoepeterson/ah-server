@@ -58,6 +58,24 @@ class FolderColleciton extends FirebaseCollection{
     }
 
     /**
+     * get the root folder from the provided id
+     * @param {string} id 
+     * @returns 
+     */
+    async getRootFolder(id){
+        try{
+            let query = await this.db.collection(this.collection).where('id','==',id);
+            let folderData = await query.get();
+            let rootFolder = folderData.docs[0].data();
+            let updatedFolder = new Folder(rootFolder);
+            return updatedFolder;
+        }
+        catch(e){
+            throw e;
+        }
+    }
+
+    /**
      * create a specified sub folder for a folder
      * @param {Folder} subFolder 
      * @param {string} path path to place the folder in format parentId/subfolder1/...
@@ -67,10 +85,7 @@ class FolderColleciton extends FirebaseCollection{
         let rootFolderId = splitPath[0];
         subFolder = this.initFolder(subFolder);
         try{
-            let query = await this.db.collection(this.collection).where('id','==',rootFolderId);
-            let folderData = await query.get();
-            let rootFolder = folderData.docs[0].data();
-            let updatedFolder = new Folder(rootFolder);
+            let updatedFolder = await this.getRootFolder(rootFolderId);
             let targetSubfolder = this.findTargetSubFolder(updatedFolder,splitPath,0);
             targetSubfolder.folderCount += 1;
             subFolder.id = this.handleize(`${subFolder.name}::${targetSubfolder.folderCount}`);
@@ -87,8 +102,31 @@ class FolderColleciton extends FirebaseCollection{
         }
     }
     
-    async createFile(file){
+    /**
+     * add a file to the specified folder
+     * @param {PatientFile} file 
+     * @param {string} path 
+     * @returns 
+     */
+    async createFile(file,path){
+        let splitPath = path.split('/');
+        let rootFolderId = splitPath[0];
+        try{
+            let updatedFolder = await this.getRootFolder(rootFolderId);
+            let targetSubfolder = this.findTargetSubFolder(updatedFolder,splitPath,0);
+            targetSubfolder.fileCount += 1;
+            file.id = this.handleize(`${file.name}::${targetSubfolder.fileCount}`);
+            targetSubfolder.files.push(file);
 
+            let updatedFolderData = updatedFolder.serialize();
+            updatedFolderData = JSON.parse(JSON.stringify(updatedFolderData));
+            await this.db.collection(this.collection).doc(updatedFolderData.id).set(updatedFolderData,{merge:true});
+            return updatedFolder;
+        }
+        catch(e){
+            console.log('error creating sub folder: ',e);
+            throw e;
+        }
     }
 
     async getFolder(handle){
