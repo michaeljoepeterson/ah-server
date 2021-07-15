@@ -178,7 +178,58 @@ class FolderColleciton extends FirebaseCollection{
             return rootFolder;
         }
         catch(e){
-            console.error('error getting user by email:',e);
+            console.error('error updating root folder:',e);
+            throw e;
+        }
+    }
+
+    /**
+     * update the target subfolder
+     * @param {Folder} newFolder 
+     * @param {string} path 
+     * @returns 
+     */
+    async updateSubFolder(newFolder,path){
+        let splitPath = path.split('/');
+        let id = splitPath[0];
+        try{
+            let rootFolder = await this.getRootFolder(id);
+            let targetSubfolder = this.findTargetSubFolder(rootFolder,splitPath,0);
+            targetSubfolder.updateFolder(newFolder)
+            let rootFolderData = rootFolder.serialize();
+            rootFolderData = JSON.parse(JSON.stringify(rootFolderData));
+
+            await this.db.collection(this.collection).doc(id).set(rootFolderData,{merge:true});
+            return rootFolder;
+        }
+        catch(e){
+            console.error('error updating sub folder:',e);
+            throw e;
+        }
+    }
+
+    /**
+     * update the target file
+     * @param {PatientFile} newFile 
+     * @param {string} path 
+     * @returns 
+     */
+    async updateFile(newFile,path){
+        let splitPath = path.split('/');
+        let id = splitPath[0];
+        try{
+            let rootFolder = await this.getRootFolder(id);
+            let targetSubfolder = this.findTargetSubFolder(rootFolder,splitPath,0);
+            targetSubfolder.updateFile(newFile);
+            
+            let rootFolderData = rootFolder.serialize();
+            rootFolderData = JSON.parse(JSON.stringify(rootFolderData));
+
+            await this.db.collection(this.collection).doc(id).set(rootFolderData,{merge:true});
+            return rootFolder;
+        }
+        catch(e){
+            console.error('error updating sub folder:',e);
             throw e;
         }
     }

@@ -65,6 +65,17 @@ class Folder extends BaseModel{
     updateFolder(newFolder){
         this.initFolder(newFolder);
     }
+
+    /**
+     * 
+     * @param {PatientFile} newFile 
+     */
+    updateFile(newFile){
+        let fileIndex = this.files.findIndex((file) => file.id === newFile.id);
+        if(fileIndex >= 0){
+            this.files[fileIndex] = newFile;
+        }
+    }
 }
 
 module.exports = {Folder};

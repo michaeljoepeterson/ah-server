@@ -19,7 +19,7 @@ class BaseModel{
         });
 
         keys.forEach(key => {
-            if(keyLookup[key]){
+            if(keyLookup[key] && data[key]){
                 this[key] = data[key];
             }
         });

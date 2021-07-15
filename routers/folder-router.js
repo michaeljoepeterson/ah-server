@@ -119,4 +119,49 @@ router.put('/folder/:id',async (req,res,next) => {
     }
 });
 
+router.put('/subfolder',async (req,res,next) => {
+    let {folder,path} = req.body; 
+
+    try{
+        let newFolder = new Folder(folder);
+        newFolder.owner = req.userData.email;
+        let folderDb = new FolderColleciton();
+        createdFolder = await folderDb.updateSubFolder(newFolder,path);
+        res.status(200);
+        return res.json({
+            message:'Sub Folder updated',
+            folder:createdFolder
+        });
+    }
+    catch(e){
+        let message = 'Error updating sub folder';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
+
+router.put('/file',async (req,res,next) => {
+    let {file,path} = req.body; 
+
+    try{
+        let newFile = new PatientFile(file);
+        let folderDb = new FolderColleciton();
+        createdFolder = await folderDb.updateFile(newFile,path);
+        res.status(200);
+        return res.json({
+            message:'File updated',
+            folder:createdFolder
+        });
+    }
+    catch(e){
+        let message = 'Error updating file';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
+
 module.exports = {router};

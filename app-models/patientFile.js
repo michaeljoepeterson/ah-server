@@ -18,6 +18,13 @@ class PatientFile extends BaseModel{
         }
     }
 
+    /**
+     * 
+     * @param {PatientFile} file 
+     */
+    updateFile(file){
+        this.init(file)
+    }
 }
 
 module.exports = {PatientFile};
