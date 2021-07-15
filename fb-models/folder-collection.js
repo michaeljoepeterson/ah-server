@@ -23,7 +23,7 @@ class FolderColleciton extends FirebaseCollection{
      * create a new folder
      * @param {Folder} folder 
      */
-    async createFolder(folder){
+    async createRootFolder(folder){
         try{
             let data = folder.serialize();
             let newFolder = await this.db.collection(this.collection).add(data);
@@ -34,11 +34,18 @@ class FolderColleciton extends FirebaseCollection{
             return data;
         }
         catch(e){
-            console.log('error creating folder: ',e);
+            console.error('error creating folder: ',e);
             throw e;
         }
     }
     
+    /**
+     * find the target sub folder from the provided path
+     * @param {Folder} folder 
+     * @param {string[]} splitPath 
+     * @param {number} pathIndex 
+     * @returns 
+     */
     findTargetSubFolder(folder,splitPath,pathIndex){
         if(splitPath.length === 1){
             return folder;
@@ -71,6 +78,7 @@ class FolderColleciton extends FirebaseCollection{
             return updatedFolder;
         }
         catch(e){
+            console.error('error getting root folder');
             throw e;
         }
     }
@@ -85,19 +93,19 @@ class FolderColleciton extends FirebaseCollection{
         let rootFolderId = splitPath[0];
         subFolder = this.initFolder(subFolder);
         try{
-            let updatedFolder = await this.getRootFolder(rootFolderId);
-            let targetSubfolder = this.findTargetSubFolder(updatedFolder,splitPath,0);
+            let rootFolder = await this.getRootFolder(rootFolderId);
+            let targetSubfolder = this.findTargetSubFolder(rootFolder,splitPath,0);
             targetSubfolder.folderCount += 1;
             subFolder.id = this.handleize(`${subFolder.name}::${targetSubfolder.folderCount}`);
             targetSubfolder.subFolders.push(subFolder);
 
-            let updatedFolderData = updatedFolder.serialize();
-            updatedFolderData = JSON.parse(JSON.stringify(updatedFolderData));
-            await this.db.collection(this.collection).doc(updatedFolderData.id).set(updatedFolderData,{merge:true});
-            return updatedFolder;
+            let rootFolderData = rootFolder.serialize();
+            rootFolderData = JSON.parse(JSON.stringify(rootFolderData));
+            await this.db.collection(this.collection).doc(rootFolderData.id).set(rootFolderData,{merge:true});
+            return rootFolder;
         }
         catch(e){
-            console.log('error creating sub folder: ',e);
+            console.error('error creating sub folder: ',e);
             throw e;
         }
     }
@@ -112,25 +120,21 @@ class FolderColleciton extends FirebaseCollection{
         let splitPath = path.split('/');
         let rootFolderId = splitPath[0];
         try{
-            let updatedFolder = await this.getRootFolder(rootFolderId);
-            let targetSubfolder = this.findTargetSubFolder(updatedFolder,splitPath,0);
+            let rootFolder = await this.getRootFolder(rootFolderId);
+            let targetSubfolder = this.findTargetSubFolder(rootFolder,splitPath,0);
             targetSubfolder.fileCount += 1;
             file.id = this.handleize(`${file.name}::${targetSubfolder.fileCount}`);
             targetSubfolder.files.push(file);
 
-            let updatedFolderData = updatedFolder.serialize();
-            updatedFolderData = JSON.parse(JSON.stringify(updatedFolderData));
-            await this.db.collection(this.collection).doc(updatedFolderData.id).set(updatedFolderData,{merge:true});
-            return updatedFolder;
+            let rootFolderData = rootFolder.serialize();
+            rootFolderData = JSON.parse(JSON.stringify(rootFolderData));
+            await this.db.collection(this.collection).doc(rootFolderData.id).set(rootFolderData,{merge:true});
+            return rootFolder;
         }
         catch(e){
-            console.log('error creating sub folder: ',e);
+            console.error('error creating sub folder: ',e);
             throw e;
         }
-    }
-
-    async getFolder(handle){
-
     }
 
     /**
@@ -152,7 +156,29 @@ class FolderColleciton extends FirebaseCollection{
             return folders;
         }
         catch(e){
-            console.log('error getting user by email:',e);
+            console.error('error getting user by email:',e);
+            throw e;
+        }
+    }
+
+    /**
+     * update a root folder
+     * @param {Folder} newFolder 
+     * @param {string} id 
+     * @returns 
+     */
+    async updateRootFolder(newFolder,id){
+        try{
+            let rootFolder = await this.getRootFolder(id);
+            rootFolder.updateFolder(newFolder);
+            let rootFolderData = rootFolder.serialize();
+            rootFolderData = JSON.parse(JSON.stringify(rootFolderData));
+
+            await this.db.collection(this.collection).doc(id).set(rootFolderData,{merge:true});
+            return rootFolder;
+        }
+        catch(e){
+            console.error('error getting user by email:',e);
             throw e;
         }
     }

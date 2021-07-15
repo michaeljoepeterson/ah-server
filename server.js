@@ -13,7 +13,7 @@ app.use((req,res,next) => {
     res.status(500);
     let err = res.err ? res.err : 'no error provided';
     let customMessage = res.errMessage ? res.errMessage : '';
-    console.log('Error: ',err);
+    console.error('Error: ',err);
     return res.json({
         message:'An error occured',
         error:err.message ? err.message : err,

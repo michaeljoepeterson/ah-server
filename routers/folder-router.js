@@ -6,7 +6,7 @@ const {FolderColleciton} = require('../fb-models/folder-collection');
 const { PatientFile } = require('../app-models/patientFile');
 
 router.use(auth);
-
+//get folders for the provided user
 router.get('/:user',async (req,res,next) => {
     let {user} = req.params;
     try{
@@ -21,20 +21,20 @@ router.get('/:user',async (req,res,next) => {
     }
     catch(e){
         let message = 'Error retrieving folders';
-        console.warn(message,e);
+        console.error(message,e);
         res.err = e;
         res.errMessage = message;
         next();
     }
 });
-
+//create a new root folder
 router.post('/folder',async (req,res,next) => {
     let {folder} = req.body;
     try{
         let newFolder = new Folder(folder);
         newFolder.owner = req.userData.email;
         let folderDb = new FolderColleciton();
-        createdFolder = await folderDb.createFolder(newFolder);
+        createdFolder = await folderDb.createRootFolder(newFolder);
         res.status(200);
         return res.json({
             message:'Folder created',
@@ -43,13 +43,13 @@ router.post('/folder',async (req,res,next) => {
     }
     catch(e){
         let message = 'Error creating folder';
-        console.warn(message,e);
+        console.error(message,e);
         res.err = e;
         res.errMessage = message;
         next();
     }
 });
-
+//create a new subfolder
 router.post('/subfolder',async (req,res,next) => {
     let {folder,path} = req.body; 
 
@@ -66,13 +66,13 @@ router.post('/subfolder',async (req,res,next) => {
     }
     catch(e){
         let message = 'Error creating subfolder';
-        console.warn(message,e);
+        console.error(message,e);
         res.err = e;
         res.errMessage = message;
         next();
     }
 });
-
+//create a new file for a folder
 router.post('/file',async (req,res,next) => {
     let {file,path} = req.body; 
 
@@ -87,8 +87,32 @@ router.post('/file',async (req,res,next) => {
         });
     }
     catch(e){
-        let message = 'Error creating subfolder';
-        console.warn(message,e);
+        let message = 'Error creating file';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
+
+router.put('/folder/:id',async (req,res,next) => {
+    let {folder} = req.body; 
+    let {id} = req.params;
+
+    try{
+        let newFolder = new Folder(folder);
+        newFolder.owner = req.userData.email;
+        let folderDb = new FolderColleciton();
+        createdFolder = await folderDb.updateRootFolder(newFolder,id);
+        res.status(200);
+        return res.json({
+            message:'Folder updated',
+            folder:createdFolder
+        });
+    }
+    catch(e){
+        let message = 'Error updating folder';
+        console.error(message,e);
         res.err = e;
         res.errMessage = message;
         next();

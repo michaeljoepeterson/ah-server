@@ -33,7 +33,7 @@ class BaseModel{
         let keys = Object.keys(this);
         let data = {};
         keys.forEach(key => {
-            if(typeof this[key] !== 'function'){
+            if(typeof this[key] !== 'function' && (this[key] || this[key] === 0)){
                 data[key] = this[key];
             }
         });

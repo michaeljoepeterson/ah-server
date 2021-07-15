@@ -44,7 +44,7 @@ class Folder extends BaseModel{
         });
 
         keys.forEach(key => {
-            if(keyLookup[key]){
+            if(keyLookup[key] && data[key]){
                 this[key] = data[key];
             }
         });
@@ -56,6 +56,14 @@ class Folder extends BaseModel{
         if(data[fileName]){
             this.files = data[fileName].map(file => new PatientFile(file)); 
         }
+    }
+
+    /**
+     * update a folder from the provided folder
+     * @param {Folder} newFolder 
+     */
+    updateFolder(newFolder){
+        this.initFolder(newFolder);
     }
 }
 
