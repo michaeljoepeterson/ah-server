@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const {cors} = require('./middleware/cors');
+const mongoose = require("mongoose");
 const {router} = require('./routers/main-router');
 const {PORT,DATABASE_URL} = require('./config');
 
@@ -21,14 +22,27 @@ app.use((req,res,next) => {
     });
 });
 
-async function runServer( port = PORT) {
-    server = app.listen(port, () => {
-        console.log(`Your app is listening on port ${port}`);
-    });
-}
-
-function closeServer() {
+function runServer( databaseUrl, port = PORT) {
     return new Promise((resolve, reject) => {
+      mongoose.connect(databaseUrl,{ useNewUrlParser: true,useUnifiedTopology: true }, err => {
+        if (err) {
+          return reject(err);
+        }
+        server = app.listen(port, () => {
+          console.log(`Your app is listening on port ${port}`);
+          resolve();
+        })
+          .on('error', err => {
+            mongoose.disconnect();
+            reject(err);
+          });
+      });
+    });
+  }
+  
+function closeServer() {
+    return mongoose.disconnect().then(() => {
+        return new Promise((resolve, reject) => {
         console.log('Closing server');
         server.close(err => {
             if (err) {
@@ -36,8 +50,10 @@ function closeServer() {
             }
             resolve();
         });
+        });
     });
 }
-runServer().catch(err => console.error(err));
+  
+runServer(DATABASE_URL).catch(err => console.error(err));
 
 module.exports = {  runServer, closeServer };
