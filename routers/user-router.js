@@ -1,16 +1,16 @@
 const express = require('express');
 const router = express.Router();
 const {auth} = require('../middleware/auth');
-const {User} = require('../app-models/user');
-const {UserColleciton} = require('../fb-models/user-collection');
+//const {User} = require('../app-models/user');
+//const {UserColleciton} = require('../fb-models/user-collection');
+const {User} = require('../models/user');
 
 router.get('/:email',auth ,async (req,res,next) => {
     let {email} = req.params;
     try{
-        let users = new UserColleciton();
-        let user = await users.getUserByEmail(email);
-        let message = user.eamil ? 'Found User' : 'No User';
-        user = user.email ? user.serialize() : null; 
+        let user = await User.getUserByEmail(email);
+        let message = user && user.email ? 'Found User' : 'No User';
+        user = user && user.email ? user : null; 
         res.status(200);
         return res.json({
             message,
@@ -28,15 +28,13 @@ router.get('/:email',auth ,async (req,res,next) => {
 
 router.post('/',async (req,res,next) => {
     let {user} = req.body;
-    let newUser = new User(user);
-    let users = new UserColleciton();
     try{
-        await users.createUser(newUser);
-        let createdUser = await users.getUserByEmail(newUser.email);
+        await User.create(user);
+        let createdUser = await User.getUserByEmail(user.email);
         res.status(200);
         return res.json({
             message:'User created',
-            user:createdUser.serialize()
+            user:createdUser
         });
     }
     catch(e){

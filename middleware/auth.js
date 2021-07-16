@@ -1,5 +1,6 @@
 const admin = require('firebase-admin');
-const {UserColleciton} = require('../fb-models/user-collection');
+//const {UserColleciton} = require('../fb-models/user-collection');
+const {User} = require('../models/user');
 
 const auth = async (req, res, next) => {
     let {authtoken} = req.headers;
@@ -9,8 +10,7 @@ const auth = async (req, res, next) => {
             const decodedToken = await admin.auth().verifyIdToken(authtoken);
             let {email,name} = decodedToken;
             console.log(email,name);
-            let users = new UserColleciton();
-            let user = await users.getUserByEmail(email);
+            let user = await User.getUserByEmail(email);
             req.userData = {
                 email,
                 name,
