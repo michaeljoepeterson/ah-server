@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const {auth} = require('../middleware/auth');
-//const {User} = require('../app-models/user');
-//const {UserColleciton} = require('../fb-models/user-collection');
 const {User} = require('../models/user');
 
 router.get('/:email',auth ,async (req,res,next) => {

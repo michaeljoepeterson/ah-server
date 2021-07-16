@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { isNull } = require('util');
 //0 super admin, 1 admin, 2 teacher
 //will need to modify schema for regular users
 const userSchema = mongoose.Schema({
@@ -49,6 +48,10 @@ userSchema.statics.getUserByEmail = async function(email){
     };
 };
 
+/**
+ * model a app user
+ * @method getUserByEmail find a user with the provided email
+ */
 const User = mongoose.model('User',userSchema);
 
 module.exports = {User};

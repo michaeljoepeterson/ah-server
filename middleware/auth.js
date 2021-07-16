@@ -1,5 +1,4 @@
 const admin = require('firebase-admin');
-//const {UserColleciton} = require('../fb-models/user-collection');
 const {User} = require('../models/user');
 
 const auth = async (req, res, next) => {
