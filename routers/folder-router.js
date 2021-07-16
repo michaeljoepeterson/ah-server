@@ -164,4 +164,27 @@ router.put('/file',async (req,res,next) => {
     }
 });
 
+router.delete('/folder/:id',async (req,res,next) => {
+    let {file,path} = req.body; 
+
+    try{
+        let newFile = new PatientFile(file);
+        let folderDb = new FolderColleciton();
+        createdFolder = await folderDb.updateFile(newFile,path);
+        res.status(200);
+        return res.json({
+            message:'File updated',
+            folder:createdFolder
+        });
+    }
+    catch(e){
+        let message = 'Error updating file';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
+
+
 module.exports = {router};

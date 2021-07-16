@@ -233,6 +233,36 @@ class FolderColleciton extends FirebaseCollection{
             throw e;
         }
     }
+
+    /**
+     * delete the root based off id
+     * @param {string} id 
+     */
+    async deleteRootFolder(id){
+        try{
+
+        }
+        catch(e){
+            console.error('error deleting folder:',e);
+            throw e;
+        }
+    }
+
+    /**
+     * delete the subfolder based off id
+     * @param {string} id 
+     */
+    async deleteSubFolder(id){
+
+    }
+
+    /**
+     * delete the file based off id
+     * @param {string} id 
+     */
+    async deleteFile(id){
+
+    }
 }
 
 module.exports = {FolderColleciton};

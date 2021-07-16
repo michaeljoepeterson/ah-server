@@ -76,6 +76,22 @@ class Folder extends BaseModel{
             this.files[fileIndex] = newFile;
         }
     }
+
+    /**
+     * delete a sub folder
+     * @param {string} id 
+     */
+    deleteSubFolder(id){
+        this.subFolders = this.subFolders.filter(folder => folder.id !== id);
+    }
+
+    /**
+     * delete a file
+     * @param {string} id 
+     */
+    deleteFile(id){
+        this.files = this.files.filter(file => file.id !== id);
+    }
 }
 
 module.exports = {Folder};
