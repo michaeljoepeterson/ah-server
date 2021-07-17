@@ -4,22 +4,15 @@ const { PatientFile } = require('./patientFile');
 /**
  * base model to represent the folder data
  */
-class Folder extends BaseModel{
+class IFolder extends BaseModel{
     constructor(data){
         super();
         this.name = null;
         this.owner = null;
         this.id = null;
         this.files = null;
-        this.subFolders = null;
-        /**
-         * track folders added combined with folder handle to get unique id
-         */
-        this.folderCount = 0;
-        /**
-         * track files added combined with file handle to get unique id
-         */
-        this.fileCount = 0;
+        this.ancestors = null;
+        this.parent = null;
 
         if(data){
             this.initFolder(data);
@@ -77,21 +70,6 @@ class Folder extends BaseModel{
         }
     }
 
-    /**
-     * delete a sub folder
-     * @param {string} id 
-     */
-    deleteSubFolder(id){
-        this.subFolders = this.subFolders.filter(folder => folder.id !== id);
-    }
-
-    /**
-     * delete a file
-     * @param {string} id 
-     */
-    deleteFile(id){
-        this.files = this.files.filter(file => file.id !== id);
-    }
 }
 
-module.exports = {Folder};
+module.exports = {IFolder};

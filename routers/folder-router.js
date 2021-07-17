@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const {auth} = require('../middleware/auth');
-const {Folder} = require('../app-models/folder');
+const {IFolder} = require('../app-models/IFolder');
 const {FolderColleciton} = require('../fb-models/folder-collection');
 const { PatientFile } = require('../app-models/patientFile');
+const { User } = require('../models/user');
+const { Folder } = require('../models/folder');
 
 router.use(auth);
 //get folders for the provided user
@@ -31,14 +33,15 @@ router.get('/:user',async (req,res,next) => {
 router.post('/folder',async (req,res,next) => {
     let {folder} = req.body;
     try{
-        let newFolder = new Folder(folder);
-        newFolder.owner = req.userData.email;
-        let folderDb = new FolderColleciton();
-        createdFolder = await folderDb.createRootFolder(newFolder);
+        let newFolder = new IFolder(folder);
+        let user = await User.getUserByEmail(req.userData.email);
+        newFolder.owner = user.id;
+        let folderData = newFolder.serialize();
+        createdFolder = await Folder.create(folderData);
         res.status(200);
         return res.json({
             message:'Folder created',
-            folder:createdFolder
+            folder:createdFolder.serialize()
         });
     }
     catch(e){
@@ -51,17 +54,18 @@ router.post('/folder',async (req,res,next) => {
 });
 //create a new subfolder
 router.post('/subfolder',async (req,res,next) => {
-    let {folder,path} = req.body; 
+    let {folder} = req.body; 
 
     try{
-        let newFolder = new Folder(folder);
-        newFolder.owner = req.userData.email;
-        let folderDb = new FolderColleciton();
-        createdFolder = await folderDb.createSubFolder(newFolder,path);
+        let newFolder = new IFolder(folder);
+        let user = await User.getUserByEmail(req.userData.email);
+        newFolder.owner = user.id;
+        let folderData = newFolder.serialize();
+        createdFolder = await Folder.create(folderData);
         res.status(200);
         return res.json({
             message:'Sub Folder created',
-            folder:createdFolder
+            folder:createdFolder.serialize()
         });
     }
     catch(e){
@@ -100,7 +104,7 @@ router.put('/folder/:id',async (req,res,next) => {
     let {id} = req.params;
 
     try{
-        let newFolder = new Folder(folder);
+        let newFolder = new IFolder(folder);
         newFolder.owner = req.userData.email;
         let folderDb = new FolderColleciton();
         createdFolder = await folderDb.updateRootFolder(newFolder,id);
@@ -123,7 +127,7 @@ router.put('/subfolder',async (req,res,next) => {
     let {folder,path} = req.body; 
 
     try{
-        let newFolder = new Folder(folder);
+        let newFolder = new IFolder(folder);
         newFolder.owner = req.userData.email;
         let folderDb = new FolderColleciton();
         createdFolder = await folderDb.updateSubFolder(newFolder,path);

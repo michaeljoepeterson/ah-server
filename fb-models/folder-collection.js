@@ -1,4 +1,4 @@
-const { Folder } = require('../app-models/folder');
+const { Folder } = require('../app-models/IFolder');
 const {FirebaseCollection} = require('./fb-collection');
 
 class FolderColleciton extends FirebaseCollection{
