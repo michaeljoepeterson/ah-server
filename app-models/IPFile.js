@@ -3,15 +3,18 @@ const {BaseModel} = require('./base-model');
 /**
  * base model to represent the patient file data
  */
-class PatientFile extends BaseModel{
+class IPFile extends BaseModel{
     constructor(data){
         super();
         this.name = null;
         this.id = null;
+        this.ancestors = null;
+        this.parent = null;
         /**
          * hold any custom fields
          */
         this.customFields = [];
+        this.sortOrder = null;
 
         if(data){
             this.init(data);
@@ -27,4 +30,4 @@ class PatientFile extends BaseModel{
     }
 }
 
-module.exports = {PatientFile};
+module.exports = {IPFile};

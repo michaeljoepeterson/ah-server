@@ -3,9 +3,10 @@ const router = express.Router();
 const {auth} = require('../middleware/auth');
 const {IFolder} = require('../app-models/IFolder');
 const {FolderColleciton} = require('../fb-models/folder-collection');
-const { PatientFile } = require('../app-models/patientFile');
+const { IPFile } = require('../app-models/IPFile');
 const { User } = require('../models/user');
 const { Folder } = require('../models/folder');
+const { Pfile } = require('../models/p-file');
 
 router.use(auth);
 //get folders for the provided user
@@ -13,8 +14,8 @@ router.get('/:user',async (req,res,next) => {
     let {user} = req.params;
     try{
         let message = 'found folders';
-        let folderDb = new FolderColleciton();
-        let folders  = await folderDb.getFolders(user);
+        //Folder.buildFolderTree();
+        let folders  = await Folder.getFoldersForUser(user);
         res.status(200);
         return res.json({
             message,
@@ -78,16 +79,16 @@ router.post('/subfolder',async (req,res,next) => {
 });
 //create a new file for a folder
 router.post('/file',async (req,res,next) => {
-    let {file,path} = req.body; 
+    let {file} = req.body; 
 
     try{
-        let newFile = new PatientFile(file);
-        let folderDb = new FolderColleciton();
-        createdFolder = await folderDb.createFile(newFile,path);
+        let newFile = new IPFile(file);
+        let fileData = newFile.serialize();
+        createdFile = await Pfile.create(fileData);
         res.status(200);
         return res.json({
             message:'File created',
-            folder:createdFolder
+            folder:createdFile.serialize()
         });
     }
     catch(e){
@@ -98,7 +99,7 @@ router.post('/file',async (req,res,next) => {
         next();
     }
 });
-
+//update a folder
 router.put('/folder/:id',async (req,res,next) => {
     let {folder} = req.body; 
     let {id} = req.params;
@@ -147,10 +148,10 @@ router.put('/subfolder',async (req,res,next) => {
 });
 
 router.put('/file',async (req,res,next) => {
-    let {file,path} = req.body; 
+    let {file} = req.body; 
 
     try{
-        let newFile = new PatientFile(file);
+        let newFile = new IPFile(file);
         let folderDb = new FolderColleciton();
         createdFolder = await folderDb.updateFile(newFile,path);
         res.status(200);
@@ -172,7 +173,7 @@ router.delete('/folder/:id',async (req,res,next) => {
     let {file,path} = req.body; 
 
     try{
-        let newFile = new PatientFile(file);
+        let newFile = new IPFile(file);
         let folderDb = new FolderColleciton();
         createdFolder = await folderDb.updateFile(newFile,path);
         res.status(200);

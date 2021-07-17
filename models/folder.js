@@ -22,7 +22,48 @@ folderSchema.methods.serialize = function(){
 }
 
 /**
+ * 
+ * @param {IFolder[]} folders 
+ * @returns 
+ */
+folderSchema.statics.buildFolderTree = function(folders){
+    try{
+        return [];
+    }
+    catch(e){
+        console.log('error building tree',e);
+        throw e;
+    };
+};
+
+/**
+ * find folders for a user from the provided id
+ * @param {string} user 
+ * @returns 
+ */
+folderSchema.statics.getFoldersForUser = async function(user){
+    try{
+        let query = {
+            owner:user
+        };
+        console.log('query',query);
+        let folders = await this.find(query).populate('files');
+        if(folders){
+            return folders.map(folder => folder.serialize());
+        }
+        else{
+            return [];
+        }
+    }
+    catch(e){
+        console.log('error finding folders for user',e);
+        throw e;
+    };
+};
+
+/**
  * represent a user folder
+ * @method buildFolderTree - build a tree structure from the provided folders
  */
 const Folder = mongoose.model('Folder',folderSchema);
 

@@ -1,5 +1,5 @@
 const {BaseModel} = require('./base-model');
-const { PatientFile } = require('./patientFile');
+const { PatientFile } = require('./IPFile');
 
 /**
  * base model to represent the folder data
@@ -13,6 +13,7 @@ class IFolder extends BaseModel{
         this.files = null;
         this.ancestors = null;
         this.parent = null;
+        this.sortOrder = null;
 
         if(data){
             this.initFolder(data);
