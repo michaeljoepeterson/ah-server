@@ -14,8 +14,8 @@ router.get('/:user',async (req,res,next) => {
     let {user} = req.params;
     try{
         let message = 'found folders';
-        //Folder.buildFolderTree();
         let folders  = await Folder.getFoldersForUser(user);
+        folders = Folder.buildFolderTree(folders);
         res.status(200);
         return res.json({
             message,

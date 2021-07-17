@@ -14,6 +14,7 @@ class IFolder extends BaseModel{
         this.ancestors = null;
         this.parent = null;
         this.sortOrder = null;
+        this.subFolders = null;
 
         if(data){
             this.initFolder(data);

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const folderSchema = mongoose.Schema({
-    name:{type:String,required:true,unique:true},
+    name:{type:String,required:true},
     ancestors:{type:Array,default:[]},
     parent:{type:String,default:null},
     sortOrder:{type:Number,default:0},
@@ -22,13 +22,53 @@ folderSchema.methods.serialize = function(){
 }
 
 /**
+ * add subfolders to a root folder
+ * @param {*} rootFolder 
+ * @param {*} subFolders 
+ * @param {*} ancestorLength 
+ */
+folderSchema.statics.buildSubFolderTree = function(rootFolder,subFolders,ancestorLength){
+    try{
+        if(!ancestorLength){
+            ancestorLength = 1;
+        }
+        let rootFolderId = rootFolder.id;
+        let addedFolders = {};
+        let currentSubfolders = subFolders.filter(folder => {
+            if(folder.ancestors.length === ancestorLength && folder.ancestors.includes(rootFolderId)){
+                addedFolders[folder.id] = folder.id;
+                return true
+            }
+        });
+        rootFolder.subFolders = currentSubfolders;
+        let leftOverSubFolders = subFolders.filter(folder => !addedFolders[folder]);
+        if(leftOverSubFolders.length > 0){
+            ancestorLength++;
+            currentSubfolders.forEach(folder => {
+                this.buildSubFolderTree(folder,leftOverSubFolders,ancestorLength);
+            });
+        }
+        return rootFolder;
+    }
+    catch(e){
+        console.log('error building sub tree',e);
+        throw e;
+    };
+};
+
+/**
  * 
  * @param {IFolder[]} folders 
  * @returns 
  */
 folderSchema.statics.buildFolderTree = function(folders){
     try{
-        return [];
+        let rootFolders = folders.filter(folder => !folder.parent);
+        let subFolders = folders.filter(folder => folder.parent);
+        rootFolders.forEach(folder => {
+            this.buildSubFolderTree(folder,subFolders,1);
+        })
+        return rootFolders.filter(folder => !folder.parent);
     }
     catch(e){
         console.log('error building tree',e);

@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const pFileSchema = mongoose.Schema({
-    name:{type:String,required:true,unique:true},
+    name:{type:String,required:true},
     ancestors:{type:Array,default:[]},
     parent:{type:String,default:null},
     sortOrder:{type:Number,default:0}
