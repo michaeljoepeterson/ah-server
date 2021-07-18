@@ -128,6 +128,8 @@ folderSchema.statics.addFileToFolder = async function(file){
 
 /**
  * represent a user folder
+ * @method buildSubFolderTree - build out subfolder tree helper function for internal use
+ * @method getFoldersForUser - get all the folders for a user
  * @method buildFolderTree - build a tree structure from the provided folders
  * @method addFileToFolder - add a file to a folder after the file is created
  */

@@ -172,16 +172,19 @@ router.put('/file/:id',async (req,res,next) => {
         next();
     }
 });
-//delete folder or subfolder
+//delete folder or subfolder and all children
 router.delete('/folder/:id',async (req,res,next) => {
     let {id} = req.params; 
 
     try{
+        //find and setup delete reqs for child folders
         let foundFoulders = await Folder.find({ ancestors: id });
         let deleteFolders = foundFoulders.map(folder => {
             let id = folder._id;
             return Folder.findByIdAndDelete(id);
         });
+        
+        //find and setup delete reqs for child files
         let foundFiles = await Pfile.find({ ancestors: id });
         let deleteFiles = foundFiles.map(file => {
             let id = file._id;
@@ -189,6 +192,7 @@ router.delete('/folder/:id',async (req,res,next) => {
         });
         await Promise.all(deleteFolders);
         await Promise.all(deleteFiles);
+        //delete target folder
         await Folder.findByIdAndDelete(id);
 
         res.status(200);
@@ -211,7 +215,9 @@ router.delete('/file/:id',async (req,res,next) => {
     let {id} = req.params; 
 
     try{
+        //find the parent folder
         let parentFolders = await Folder.find({files:id});
+        //setup remove id reqs for parent folder
         let removeId = parentFolders.map(folder => {
             let folderId = folder._id;
             return Folder.findOneAndUpdate({_id:folderId},{
