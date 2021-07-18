@@ -85,10 +85,12 @@ router.post('/file',async (req,res,next) => {
         let newFile = new IPFile(file);
         let fileData = newFile.serialize();
         createdFile = await Pfile.create(fileData);
+        createdFile = createdFile.serialize();
+        await Folder.addFileToFolder(createdFile);
         res.status(200);
         return res.json({
             message:'File created',
-            folder:createdFile.serialize()
+            folder:createdFile
         });
     }
     catch(e){

@@ -10,6 +10,7 @@ const folderSchema = mongoose.Schema({
 });
 
 folderSchema.methods.serialize = function(){
+
 	return{
 		name: this.name || '',
         id:this._id,
@@ -102,8 +103,34 @@ folderSchema.statics.getFoldersForUser = async function(user){
 };
 
 /**
+ * add the newly created file to a folder
+ * @param {*} file 
+ * @returns 
+ */
+folderSchema.statics.addFileToFolder = async function(file){
+    try{
+        let query = {
+            _id:file.parent
+        };
+        if(file.id){
+            console.log('query',file);
+            let folder = await this.findOneAndUpdate(query,{
+                $push:{'files':file.id}
+            });
+            return folder;
+        }
+        return null;
+    }
+    catch(e){
+        console.log('error finding folders for user',e);
+        throw e;
+    };
+};
+
+/**
  * represent a user folder
  * @method buildFolderTree - build a tree structure from the provided folders
+ * @method addFileToFolder - add a file to a folder after the file is created
  */
 const Folder = mongoose.model('Folder',folderSchema);
 
