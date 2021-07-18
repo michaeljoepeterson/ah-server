@@ -172,22 +172,64 @@ router.put('/file/:id',async (req,res,next) => {
         next();
     }
 });
-
+//delete folder or subfolder
 router.delete('/folder/:id',async (req,res,next) => {
-    let {file,path} = req.body; 
+    let {id} = req.params; 
 
     try{
-        let newFile = new IPFile(file);
-        let folderDb = new FolderColleciton();
-        createdFolder = await folderDb.updateFile(newFile,path);
+        let foundFoulders = await Folder.find({ ancestors: id });
+        let deleteFolders = foundFoulders.map(folder => {
+            let id = folder._id;
+            return Folder.findByIdAndDelete(id);
+        });
+        let foundFiles = await Pfile.find({ ancestors: id });
+        let deleteFiles = foundFiles.map(file => {
+            let id = file._id;
+            return Pfile.findByIdAndDelete(id);
+        });
+        await Promise.all(deleteFolders);
+        await Promise.all(deleteFiles);
+        await Folder.findByIdAndDelete(id);
+
         res.status(200);
         return res.json({
-            message:'File updated',
-            folder:createdFolder
+            message:'Folder deleted',
+            foundFoulders,
+            foundFiles
         });
     }
     catch(e){
-        let message = 'Error updating file';
+        let message = 'Error deleting folder';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
+
+router.delete('/file/:id',async (req,res,next) => {
+    let {id} = req.params; 
+
+    try{
+        let parentFolders = await Folder.find({files:id});
+        let removeId = parentFolders.map(folder => {
+            let folderId = folder._id;
+            return Folder.findOneAndUpdate({_id:folderId},{
+                $pull:{files:id}
+            });
+        });
+        await Promise.all(removeId);
+        let file = await Pfile.findByIdAndDelete(id);
+
+        res.status(200);
+        return res.json({
+            message:'file deleted',
+            parentFolders,
+            file
+        });
+    }
+    catch(e){
+        let message = 'Error deleting file';
         console.error(message,e);
         res.err = e;
         res.errMessage = message;
