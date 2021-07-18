@@ -102,19 +102,19 @@ router.post('/file',async (req,res,next) => {
     }
 });
 //update a folder
+//will not return full populated tree
 router.put('/folder/:id',async (req,res,next) => {
     let {folder} = req.body; 
     let {id} = req.params;
 
     try{
-        let newFolder = new IFolder(folder);
-        newFolder.owner = req.userData.email;
-        let folderDb = new FolderColleciton();
-        createdFolder = await folderDb.updateRootFolder(newFolder,id);
+        let createdFolder = await Folder.findOneAndUpdate({_id:id},{
+            $set:folder
+        },{new:true}).populate('files');
         res.status(200);
         return res.json({
             message:'Folder updated',
-            folder:createdFolder
+            folder:createdFolder.serialize()
         });
     }
     catch(e){
@@ -126,18 +126,19 @@ router.put('/folder/:id',async (req,res,next) => {
     }
 });
 
-router.put('/subfolder',async (req,res,next) => {
-    let {folder,path} = req.body; 
+//update a subfolder
+router.put('/subfolder/:id',async (req,res,next) => {
+    let {folder} = req.body; 
+    let {id} = req.params;
 
     try{
-        let newFolder = new IFolder(folder);
-        newFolder.owner = req.userData.email;
-        let folderDb = new FolderColleciton();
-        createdFolder = await folderDb.updateSubFolder(newFolder,path);
+        let createdFolder = await Folder.findOneAndUpdate({_id:id},{
+            $set:folder
+        },{new:true}).populate('files');
         res.status(200);
         return res.json({
             message:'Sub Folder updated',
-            folder:createdFolder
+            folder:createdFolder.serialize()
         });
     }
     catch(e){
@@ -148,18 +149,19 @@ router.put('/subfolder',async (req,res,next) => {
         next();
     }
 });
-
-router.put('/file',async (req,res,next) => {
+//update a file
+router.put('/file/:id',async (req,res,next) => {
     let {file} = req.body; 
+    let {id} = req.params;
 
     try{
-        let newFile = new IPFile(file);
-        let folderDb = new FolderColleciton();
-        createdFolder = await folderDb.updateFile(newFile,path);
+        let createdFile = await Pfile.findOneAndUpdate({_id:id},{
+            $set:file
+        },{new:true})
         res.status(200);
         return res.json({
             message:'File updated',
-            folder:createdFolder
+            folder:createdFile
         });
     }
     catch(e){

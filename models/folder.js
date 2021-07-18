@@ -10,7 +10,6 @@ const folderSchema = mongoose.Schema({
 });
 
 folderSchema.methods.serialize = function(){
-
 	return{
 		name: this.name || '',
         id:this._id,
