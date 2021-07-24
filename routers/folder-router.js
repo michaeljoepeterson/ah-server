@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const {auth} = require('../middleware/auth');
 const {IFolder} = require('../app-models/IFolder');
-const {FolderColleciton} = require('../fb-models/folder-collection');
 const { IPFile } = require('../app-models/IPFile');
 const { User } = require('../models/user');
 const { Folder } = require('../models/folder');
@@ -90,7 +89,7 @@ router.post('/file',async (req,res,next) => {
         res.status(200);
         return res.json({
             message:'File created',
-            folder:createdFile
+            file:createdFile
         });
     }
     catch(e){
@@ -161,7 +160,7 @@ router.put('/file/:id',async (req,res,next) => {
         res.status(200);
         return res.json({
             message:'File updated',
-            folder:createdFile
+            file:createdFile
         });
     }
     catch(e){
