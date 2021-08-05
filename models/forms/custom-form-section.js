@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 
 const formSectionSchema = mongoose.Schema({
     name:{type:String,required:true},
-    fields:[{ type: mongoose.Schema.Types.ObjectId, ref: 'FormField', unique: false, required: [false, 'No fields found']}],
     createdAt:{type:Date},
     owner:{ type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: false, required: [true, 'No owner found']},
     ancestorSections:{type:Array,default:[]},
@@ -14,7 +13,6 @@ const formSectionSchema = mongoose.Schema({
 formSectionSchema.methods.serialize = function(){
 	return{
 		name: this.name || '',
-        fields:this.fields ? this.fields.map(field => field.serialize()) : [],
         owner:this.owner ? this.owner.serialize() : null,
         ancestorSections: this.ancestorSections,
         parentSection: this.parentSection,
