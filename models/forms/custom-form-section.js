@@ -20,7 +20,8 @@ formSectionSchema.methods.serialize = function(){
         parentSection: this.parentSection,
         sortOrder: this.sortOrder,
         parentForm: this.parentForm ? this.parentForm.serialize() : null,
-        createdAt: new Date(this.createdAt)
+        createdAt: new Date(this.createdAt),
+        id:this._id
 	};
 }
 

@@ -10,7 +10,8 @@ const formFieldSchema = mongoose.Schema({
     fieldType:{type:String,required:true},
     fieldOptions:{type:Array},
     min:{type:String},
-    max:{type:String}
+    max:{type:String},
+    parentForm:{ type: mongoose.Schema.Types.ObjectId, ref: 'Form', unique: false, required: [true, 'No form found']}
 });
 
 formFieldSchema.methods.serialize = function(){
@@ -24,7 +25,9 @@ formFieldSchema.methods.serialize = function(){
         fieldType:this.fieldType,
         fieldOptions:this.fieldOptions,
         min:this.min,
-        max:this.max
+        max:this.max,
+        parentForm: this.parentForm ? this.parentForm.serialize() : null,
+        id:this._id
 	};
 }
 
