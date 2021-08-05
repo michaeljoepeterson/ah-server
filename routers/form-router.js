@@ -5,6 +5,8 @@ const {Form} = require('../models/forms/custom-form');
 const {FormSection} = require('../models/forms/custom-form-section');
 const {IForm} = require('../app-models/forms/ICustomForm');
 const { IFormSection } = require('../app-models/forms/ICustomFormSection');
+const { IFormField } = require('../app-models/forms/ICustomFormField');
+const { FormField } = require('../models/forms/custom-field');
 
 router.use(auth);
 
@@ -63,17 +65,22 @@ router.post('/section',async (req,res,next) => {
 
 //create a new form field
 router.post('/field',async (req,res,next) => {
-    let {form} = req.body;
+    let {field} = req.body;
     try{
-        let newForm = new IForm(form);
-        newForm.owner = req.userData.id;
-        let newFormData = newForm.serialize();
-        let createdForm = await Form.create(newFormData);
-        createdForm = await Form.findById(createdForm._id).populate('owner');
+        let newFormField = new IFormField(field);
+        newFormField.owner = req.userData.id;
+        let newFormFieldData = newFormField.serialize();
+        let createdFormField = await FormField.create(newFormFieldData);
+        createdFormField = await FormField.findById(createdFormField._id).populate('owner').populate('parentForm').populate({
+            path:'parentForm',
+            populate:{
+                path:'owner'
+            }
+        });
         res.status(200);
         return res.json({
-            message:'Form created',
-            form:createdForm.serialize()
+            message:'Form Field created',
+            field:createdFormField.serialize()
         });
     }
     catch(e){

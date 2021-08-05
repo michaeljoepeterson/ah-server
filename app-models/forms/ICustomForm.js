@@ -1,5 +1,8 @@
 const { BaseModel } = require("../base-model");
 
+/**
+ * app model for a form
+ */
 class IForm extends BaseModel{
 
     constructor(data){

@@ -1,5 +1,8 @@
 const { BaseModel } = require("../base-model");
 
+/**
+ * app model for a form section
+ */
 class IFormSection extends BaseModel{
 
     constructor(data){
