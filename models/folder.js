@@ -41,7 +41,7 @@ folderSchema.statics.buildSubFolderTree = function(rootFolder,subFolders,ancesto
             }
         });
         rootFolder.subFolders = currentSubfolders;
-        let leftOverSubFolders = subFolders.filter(folder => !addedFolders[folder]);
+        let leftOverSubFolders = subFolders.filter(folder => !addedFolders[folder.id]);
         if(leftOverSubFolders.length > 0){
             ancestorLength++;
             currentSubfolders.forEach(folder => {

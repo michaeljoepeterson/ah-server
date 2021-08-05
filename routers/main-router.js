@@ -3,6 +3,7 @@ const rateLimit = require("express-rate-limit");
 const router = express.Router();
 const {router: userRouter} = require('./user-router');
 const {router: folderRouter} = require('./folder-router');
+const {router: formRouter} = require('./form-router');
 
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000,
@@ -12,5 +13,6 @@ const limiter = rateLimit({
 router.use(limiter);
 router.use('/users',userRouter);
 router.use('/folders',folderRouter);
+router.use('/form',formRouter);
 
 module.exports = {router};
