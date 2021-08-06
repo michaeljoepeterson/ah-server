@@ -10,6 +10,28 @@ const { FormField } = require('../models/forms/custom-field');
 
 router.use(auth);
 
+router.get('/:id',async (req,res,next) => {
+    let {id} = req.params;
+    try{
+        let formDoc = await Form.findById(id).populate('owner');
+        let form = formDoc.serialize();
+        let formSections = await FormSection.getSectionsByForm(id);
+        let formFields = await FormField.getFieldsByForm(id);
+        form = Form.buildFormTree(form,formSections,formFields);
+        return res.json({
+            message:'Form created',
+            form
+        });
+    }
+    catch(e){
+        let message = 'Error creating form';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
+
 //create a new form
 router.post('/',async (req,res,next) => {
     let {form} = req.body;

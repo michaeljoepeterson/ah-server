@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { IFormSection } = require('../../app-models/forms/ICustomFormSection');
 
 const formSectionSchema = mongoose.Schema({
     name:{type:String,required:true},
@@ -23,8 +24,27 @@ formSectionSchema.methods.serialize = function(){
 	};
 }
 
+formSectionSchema.statics.getSectionsByForm = async function(id){
+	try{
+        let query = {
+            parentForm:id
+        };
+        let fields = await this.find(query).populate('owner').populate('parentForm').populate({
+            path:'parentForm',
+            populate:{
+                path:'owner'
+            }
+        });
+        return fields.map(field => new IFormSection(field.serialize()));
+    }
+    catch(e){
+        throw e;
+    }
+}
+
 /**
  * model a form section
+ * @method getSectionsByForm find all fields for the specified form
  */
  const FormSection = mongoose.model('FormSection',formSectionSchema);
 

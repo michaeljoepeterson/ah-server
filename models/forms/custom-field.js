@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { IFormField } = require('../../app-models/forms/ICustomFormField');
 
 const formFieldSchema = mongoose.Schema({
     name:{type:String,required:true},
@@ -31,8 +32,27 @@ formFieldSchema.methods.serialize = function(){
 	};
 }
 
+formFieldSchema.statics.getFieldsByForm = async function(id){
+	try{
+        let query = {
+            parentForm:id
+        };
+        let fields = await this.find(query).populate('owner').populate('parentForm').populate({
+            path:'parentForm',
+            populate:{
+                path:'owner'
+            }
+        });
+        return fields.map(field => new IFormField(field.serialize()));
+    }
+    catch(e){
+        throw e;
+    }
+}
+
 /**
  * model a form field
+ * @method getFieldsByForm get the fields for a form
  */
  const FormField = mongoose.model('FormField',formFieldSchema);
 
