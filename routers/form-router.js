@@ -10,6 +10,24 @@ const { FormField } = require('../models/forms/custom-field');
 
 router.use(auth);
 
+router.get('/',async (req,res,next) => {
+    try{
+        let formDoc = await Form.find({}).populate('owner');
+        let forms = formDoc.map(form => form.serialize());
+        return res.json({
+            message:'Forms found',
+            forms
+        });
+    }
+    catch(e){
+        let message = 'Error creating form';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
+
 router.get('/:id',async (req,res,next) => {
     let {id} = req.params;
     try{
@@ -19,7 +37,7 @@ router.get('/:id',async (req,res,next) => {
         let formFields = await FormField.getFieldsByForm(id);
         form = Form.buildFormTree(form,formSections,formFields);
         return res.json({
-            message:'Form created',
+            message:'Form found',
             form
         });
     }
