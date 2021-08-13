@@ -12,6 +12,7 @@ class IForm extends BaseModel{
         this.owner = null;
         this.createdAt = null;
         this.sections = [];
+        this.fields = [];
         
         if(data){
             this.init(data);

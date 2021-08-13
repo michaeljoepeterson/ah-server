@@ -6,14 +6,16 @@ const { IFormSection } = require('../../app-models/forms/ICustomFormSection');
 const formSchema = mongoose.Schema({
     name:{type:String,required:true,unique:true},
     createdAt:{type:Date},
-    owner:{ type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: false, required: true}
+    owner:{ type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: false, required: true},
+    fields:[{ type: mongoose.Schema.Types.ObjectId, ref: 'FormField', unique: false, required: [true, 'No fields found']}]
 });
 
 formSchema.methods.serialize = function(){
 	return{
 		name: this.name || '',
         owner:this.owner ? this.owner.serialize() : null,
-        id:this._id
+        id:this._id,
+        fields:this.fields ? this.fields.map(field => field.serialize()) : []
 	};
 }
 
