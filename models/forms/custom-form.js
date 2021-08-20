@@ -6,16 +6,14 @@ const { IFormSection } = require('../../app-models/forms/ICustomFormSection');
 const formSchema = mongoose.Schema({
     name:{type:String,required:true,unique:true},
     createdAt:{type:Date},
-    owner:{ type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: false, required: true},
-    fields:[{ type: mongoose.Schema.Types.ObjectId, ref: 'FormField', unique: false, required: [true, 'No fields found']}]
+    owner:{ type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: false, required: true}
 });
 
 formSchema.methods.serialize = function(){
 	return{
 		name: this.name || '',
         owner:this.owner ? this.owner.serialize() : null,
-        id:this._id,
-        fields:this.fields ? this.fields.map(field => field.serialize()) : []
+        id:this._id
 	};
 }
 
@@ -83,8 +81,11 @@ formSchema.statics.addFieldsToSection = function(rootSection,fields){
  */
 formSchema.statics.buildFormTree = function(form,sections,fields){
 	try{
+        let formFields = fields.filter(field => !field.parentSection);
+        form.fields = formFields;
+        let sectionFields = fields.filter(field => field.parentSection);
         sections.forEach(section => {
-            this.addFieldsToSection(section,fields);
+            this.addFieldsToSection(section,sectionFields);
         });
         this.buildFormSectionTree(form,sections,0);
         return form;

@@ -111,6 +111,7 @@ router.post('/field',async (req,res,next) => {
         newFormField.owner = req.userData.id;
         let newFormFieldData = newFormField.serialize();
         let createdFormField = await FormField.create(newFormFieldData);
+        //handle base form fields
         createdFormField = await FormField.findById(createdFormField._id).populate('owner').populate('parentForm').populate({
             path:'parentForm',
             populate:{
