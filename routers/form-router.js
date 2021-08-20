@@ -133,5 +133,28 @@ router.post('/field',async (req,res,next) => {
     }
 });
 
+router.put('/:id',async (req,res,next) => {
+    let {form} = req.body;
+    let {id} = req.params;
+    delete form.createdAt;
+    try{
+        let newForm = await Form.findByIdAndUpdate(id,{
+            $set:form
+        },{new:true}).populate('owner');
+        res.status(200);
+        return res.json({
+            message:'Form Updated',
+            form:newForm.serialize()
+        });
+    }
+    catch(e){
+        let message = 'Error updating form';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
+
 
 module.exports = {router};
