@@ -137,6 +137,7 @@ router.put('/:id',async (req,res,next) => {
     let {form} = req.body;
     let {id} = req.params;
     delete form.createdAt;
+    delete form.owner;
     try{
         let newForm = await Form.findByIdAndUpdate(id,{
             $set:form
@@ -153,6 +154,35 @@ router.put('/:id',async (req,res,next) => {
         res.err = e;
         res.errMessage = message;
         next();
+    }
+});
+
+router.put('/section/:id', async (req,res,next) => {
+    let {section} = req.body;
+    let {id} = req.params;
+    delete section.createdAt;
+    delete section.owner;
+    try{
+        let newSection = await FormSection.findByIdAndUpdate(id,{
+            $set:section
+        },{new:true}).populate('owner').populate('parentForm').populate({
+            path:'parentForm',
+            populate:{
+                path:'owner'
+            }
+        });
+        res.status(200);
+        return res.json({
+            message:'Section Updated',
+            section:newSection.serialize()
+        });
+    }
+    catch(e){
+        let message = 'Error updating form';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next(); 
     }
 });
 
