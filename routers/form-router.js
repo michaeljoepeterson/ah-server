@@ -178,7 +178,7 @@ router.put('/section/:id', async (req,res,next) => {
         });
     }
     catch(e){
-        let message = 'Error updating form';
+        let message = 'Error updating section';
         console.error(message,e);
         res.err = e;
         res.errMessage = message;
@@ -186,5 +186,33 @@ router.put('/section/:id', async (req,res,next) => {
     }
 });
 
+router.put('/field/:id', async (req,res,next) => {
+    let {field} = req.body;
+    let {id} = req.params;
+    delete field.createdAt;
+    delete field.owner;
+    try{
+        let newField = await FormField.findByIdAndUpdate(id,{
+            $set:field
+        },{new:true}).populate('owner').populate('parentForm').populate({
+            path:'parentForm',
+            populate:{
+                path:'owner'
+            }
+        });
+        res.status(200);
+        return res.json({
+            message:'Field Updated',
+            section:newField.serialize()
+        });
+    }
+    catch(e){
+        let message = 'Error updating field';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next(); 
+    }
+});
 
 module.exports = {router};
