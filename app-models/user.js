@@ -3,7 +3,7 @@ const {BaseModel} = require('./base-model');
 /**
  * base model to represent a user
  */
-class User extends BaseModel{
+class IUser extends BaseModel{
     constructor(data){
         super();
         this.email = null;
@@ -24,4 +24,4 @@ class User extends BaseModel{
     }
 }
 
-module.exports = {User};
+module.exports = {IUser};

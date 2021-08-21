@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { IFormField } = require('../../app-models/forms/ICustomFormField');
-const {User} = require('../../app-models/user');
+const {IUser} = require('../../app-models/user');
 const {IForm} = require('../../app-models/forms/ICustomForm');
 
 //act as template for field value
@@ -20,7 +20,7 @@ const formFieldSchema = mongoose.Schema({
 });
 //to do deprecate serialize move to interfaces
 formFieldSchema.methods.serialize = function(){
-    let owner = new User(this.owner);
+    let owner = new IUser(this.owner);
     let parentForm = new IForm(this.parentForm);
 	return{
 		name: this.name || '',

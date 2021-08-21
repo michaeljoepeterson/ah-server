@@ -7,8 +7,10 @@ const {IForm} = require('../app-models/forms/ICustomForm');
 const { IFormSection } = require('../app-models/forms/ICustomFormSection');
 const { IFormField } = require('../app-models/forms/ICustomFormField');
 const { FormField } = require('../models/forms/custom-field');
+const { IFormValue } = require('../app-models/forms/ICustomFormValue');
+const { FieldValue } = require('../models/forms/custom-value');
 
-//router.use(auth);
+router.use(auth);
 
 router.get('/',async (req,res,next) => {
     try{
@@ -162,9 +164,10 @@ router.put('/section/:id', async (req,res,next) => {
     let {id} = req.params;
     delete section.createdAt;
     delete section.owner;
+    section = new IFormSection(section);
     try{
         let newSection = await FormSection.findByIdAndUpdate(id,{
-            $set:section
+            $set:section.serialize()
         },{new:true}).populate('owner').populate('parentForm').populate({
             path:'parentForm',
             populate:{
@@ -191,9 +194,10 @@ router.put('/field/:id', async (req,res,next) => {
     let {id} = req.params;
     delete field.createdAt;
     delete field.owner;
+    field = new IFormField(field);
     try{
         let newField = await FormField.findByIdAndUpdate(id,{
-            $set:field
+            $set:field.serialize()
         },{new:true}).populate('owner').populate('parentForm').populate({
             path:'parentForm',
             populate:{
@@ -212,6 +216,35 @@ router.put('/field/:id', async (req,res,next) => {
         res.err = e;
         res.errMessage = message;
         next(); 
+    }
+});
+
+router.post('/value',async (req,res,next) => {
+    let {fieldValue} = req.body;
+    try{
+        let newFormValue = new IFormValue(fieldValue);
+        newFormValue.owner = req.userData.id;
+        let newFormValueData = newFormValue.serialize();
+        let createdFormValue = await FieldValue.create(newFormValueData);
+        //handle base form fields
+        createdFormValue = await FieldValue.findById(createdFormValue._id).populate('owner').populate('parentFile').populate("parentField").populate('parentForm').populate({
+            path:'parentForm',
+            populate:{
+                path:'owner'
+            }
+        });
+        res.status(200);
+        return res.json({
+            message:'Form value created',
+            fieldValue:createdFormValue.serialize()
+        });
+    }
+    catch(e){
+        let message = 'Error creating value';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
     }
 });
 

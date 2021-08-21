@@ -15,10 +15,10 @@ class IFormField extends BaseModel{
         this.parentSection = null;
         this.parentForm = null;
         this.sortOrder = 0;
-        this.fieldType = null
-        this.fieldOptions = null
-        this.min = null
-        this.max = null
+        this.fieldType = null;
+        this.fieldOptions = null;
+        this.min = null;
+        this.max = null;
         
         if(data){
             this.init(data);

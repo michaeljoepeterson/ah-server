@@ -12,9 +12,8 @@ class BaseModel{
      */
     init(data){
         let keys = Object.keys(this);
-        let dataKeys = Object.keys(data);
         let keyLookup = {};
-        dataKeys.forEach(key => {
+        keys.forEach(key => {
             keyLookup[key] = key;
         });
 
