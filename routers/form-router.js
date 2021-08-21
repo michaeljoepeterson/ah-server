@@ -8,7 +8,7 @@ const { IFormSection } = require('../app-models/forms/ICustomFormSection');
 const { IFormField } = require('../app-models/forms/ICustomFormField');
 const { FormField } = require('../models/forms/custom-field');
 
-router.use(auth);
+//router.use(auth);
 
 router.get('/',async (req,res,next) => {
     try{

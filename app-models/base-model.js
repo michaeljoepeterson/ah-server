@@ -3,7 +3,7 @@
  */
 class BaseModel{
     constructor(){
-
+        this.id = null;
     }
 
     /**
@@ -21,6 +21,9 @@ class BaseModel{
         keys.forEach(key => {
             if(keyLookup[key] && data[key]){
                 this[key] = data[key];
+            }
+            else if(key === 'id'){
+                this.id = data._id;
             }
         });
     }

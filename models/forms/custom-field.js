@@ -1,6 +1,9 @@
 const mongoose = require('mongoose');
 const { IFormField } = require('../../app-models/forms/ICustomFormField');
+const {User} = require('../../app-models/user');
+const {IForm} = require('../../app-models/forms/ICustomForm');
 
+//act as template for field value
 const formFieldSchema = mongoose.Schema({
     name:{type:String,required:true},
     createdAt:{type:Date},
@@ -15,11 +18,13 @@ const formFieldSchema = mongoose.Schema({
     parentForm:{ type: mongoose.Schema.Types.ObjectId, ref: 'Form', unique: false, required: [true, 'No form found']},
     visible:{type:Boolean,default:true}
 });
-
+//to do deprecate serialize move to interfaces
 formFieldSchema.methods.serialize = function(){
+    let owner = new User(this.owner);
+    let parentForm = new IForm(this.parentForm);
 	return{
 		name: this.name || '',
-        owner:this.owner ? this.owner.serialize() : null,
+        owner,
         ancestorSections: this.ancestorSections,
         parentSection: this.parentSection,
         sortOrder: this.sortOrder,
@@ -28,7 +33,7 @@ formFieldSchema.methods.serialize = function(){
         fieldOptions:this.fieldOptions,
         min:this.min,
         max:this.max,
-        parentForm: this.parentForm ? this.parentForm.serialize() : null,
+        parentForm,
         id:this._id
 	};
 }
