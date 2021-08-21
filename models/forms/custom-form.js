@@ -6,7 +6,8 @@ const { IFormSection } = require('../../app-models/forms/ICustomFormSection');
 const formSchema = mongoose.Schema({
     name:{type:String,required:true,unique:true},
     createdAt:{type:Date},
-    owner:{ type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: false, required: true}
+    owner:{ type: mongoose.Schema.Types.ObjectId, ref: 'User', unique: false, required: true},
+    visible:{type:Boolean,default:true}
 });
 
 formSchema.methods.serialize = function(){

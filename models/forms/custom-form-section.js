@@ -8,7 +8,8 @@ const formSectionSchema = mongoose.Schema({
     ancestorSections:{type:Array,default:[]},
     parentSection:{type:String,default:null},
     parentForm:{ type: mongoose.Schema.Types.ObjectId, ref: 'Form', unique: false, required: [true, 'No form found']},
-    sortOrder:{type:Number,default:0}
+    sortOrder:{type:Number,default:0},
+    visible:{type:Boolean,default:true}
 });
 
 formSectionSchema.methods.serialize = function(){

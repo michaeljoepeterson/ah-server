@@ -12,7 +12,8 @@ const formFieldSchema = mongoose.Schema({
     fieldOptions:{type:Array},
     min:{type:String},
     max:{type:String},
-    parentForm:{ type: mongoose.Schema.Types.ObjectId, ref: 'Form', unique: false, required: [true, 'No form found']}
+    parentForm:{ type: mongoose.Schema.Types.ObjectId, ref: 'Form', unique: false, required: [true, 'No form found']},
+    visible:{type:Boolean,default:true}
 });
 
 formFieldSchema.methods.serialize = function(){
