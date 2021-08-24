@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const pFileSchema = mongoose.Schema({
     patientId:{type:String,required:true, unique:true},
-    name:{type:String,required:true},
+    name:{type:String,required:false},
     ancestors:{type:Array,default:[]},
     parent:{type:String,default:null},
     sortOrder:{type:Number,default:0},
@@ -23,7 +23,9 @@ pFileSchema.methods.serialize = function(){
         height:this.height,
         weight:this.weight,
         heightString:this.heightString,
-        weightString:this.weightString
+        weightString:this.weightString,
+        activityLevel:this.activityLevel,
+        patientId:this.patientId
 	};
 }
 

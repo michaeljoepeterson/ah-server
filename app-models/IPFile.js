@@ -10,12 +10,13 @@ class IPFile extends BaseModel{
         this.id = null;
         this.ancestors = null;
         this.parent = null;
-        /**
-         * hold any custom fields
-         */
         this.customFields = [];
         this.sortOrder = null;
-
+        this.patientId = null;
+        this.weight = null;
+        this.height = null;
+        this.activityLevel = null;
+        
         if(data){
             this.init(data);
         }
