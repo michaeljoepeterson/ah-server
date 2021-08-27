@@ -248,4 +248,39 @@ router.post('/value',async (req,res,next) => {
     }
 });
 
+router.put('/value/:id',async (req,res,next) => {
+    let {fieldValue} = req.body;
+    let {id} = req.params;
+    delete fieldValue.owner;
+    delete fieldValue.createdAt;
+    delete fieldValue.parentFile;
+    delete fieldValue.parentField;
+    delete fieldValue.parentForm;
+
+    try{
+        let newFormValue = new IFormValue(fieldValue);
+        let newFormValueData = newFormValue.serialize();
+        let newVal = await FieldValue.findByIdAndUpdate(id,{
+            $set:newFormValueData
+        },{new:true}).populate('owner').populate('parentFile').populate("parentField").populate('parentForm').populate({
+            path:'parentForm',
+            populate:{
+                path:'owner'
+            }
+        });
+        res.status(200);
+        return res.json({
+            message:'Form value updated',
+            fieldValue:newVal.serialize()
+        });
+    }
+    catch(e){
+        let message = 'Error creating value';
+        console.error(message,e);
+        res.err = e;
+        res.errMessage = message;
+        next();
+    }
+});
+
 module.exports = {router};
