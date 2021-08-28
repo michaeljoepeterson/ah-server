@@ -8,7 +8,7 @@ const {router: fileRouter} = require('./patient-file-router');
 
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000,
-    max: 30,
+    max: 60,
     message:'An error occured.'
 });
 router.use(limiter);
