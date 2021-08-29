@@ -29,6 +29,8 @@ router.get('/values/:id',async (req,res,next) => {
 });
 /**
  * get and map form values for a file
+ * possibly just get form and values separately then render field struct from form
+ * then render values within the individual components through service
  */
 router.get('/form/values/:id',async (req,res,next) => {
     let {id} = req.params;
