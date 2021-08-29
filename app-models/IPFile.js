@@ -16,6 +16,7 @@ class IPFile extends BaseModel{
         this.weight = null;
         this.height = null;
         this.activityLevel = null;
+        this.formType = null;
         
         if(data){
             this.init(data);

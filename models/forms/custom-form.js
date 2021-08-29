@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const { IForm } = require('../../app-models/forms/ICustomForm');
 const { IFormField } = require('../../app-models/forms/ICustomFormField');
 const { IFormSection } = require('../../app-models/forms/ICustomFormSection');
+const { IFormValue } = require('../../app-models/forms/ICustomFormValue');
 
 const formSchema = mongoose.Schema({
     name:{type:String,required:true,unique:true},
@@ -74,6 +75,30 @@ formSchema.statics.addFieldsToSection = function(rootSection,fields){
     return rootSection;
 }
 
+/**
+ * add values to the sections
+ * @param {IFormSection} rootSection 
+ * @param {IFormValue[]} values 
+ * @returns 
+ */
+ formSchema.statics.addValuesToSection = function(rootSection,values){
+    let rootSectionId = rootSection.id;
+    let foundValues = values.filter(value => value.parentSection == rootSectionId);
+    rootSection.values = foundValues.sort((valueA, valueB) => {
+        if(valueA.sortOrder < valueB.sortOrder){
+            return -1;
+        }
+        else if(valueA.sortOrder > valueB.sortOrder){
+            return  1;
+        }
+        else{
+            return 0;
+        }
+    });
+
+    return rootSection;
+}
+
 
 /**
  * build out the form tree structure
@@ -87,6 +112,29 @@ formSchema.statics.buildFormTree = function(form,sections,fields){
         let sectionFields = fields.filter(field => field.parentSection);
         sections.forEach(section => {
             this.addFieldsToSection(section,sectionFields);
+        });
+        this.buildFormSectionTree(form,sections,0);
+        return form;
+    }
+    catch(e){
+        throw e;
+    }
+}
+
+/**
+ * build out the form tree structure with the custom values
+ * @param {IFormSection[]} sections 
+ * @param {IFormValue[]} values 
+ */
+ formSchema.statics.buildFormValueTree = function(form,sections,values){
+	try{
+        //capture root vals
+        let formValues = values.filter(field => !field.parentSection);
+        form.values = formValues;
+        //all values that are part of a section
+        let sectionValues = values.filter(field => field.parentSection);
+        sections.forEach(section => {
+            this.addValuesToSection(section,sectionValues);
         });
         this.buildFormSectionTree(form,sections,0);
         return form;

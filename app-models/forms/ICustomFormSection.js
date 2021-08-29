@@ -17,6 +17,7 @@ class IFormSection extends BaseModel{
         this.sortOrder = 0;
         this.sections = [];
         this.fields = [];
+        this.values = [];
         
         if(data){
             this.init(data);

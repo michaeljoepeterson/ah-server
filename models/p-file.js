@@ -10,7 +10,8 @@ const pFileSchema = mongoose.Schema({
     height:{type:Number,default:null},
     weight:{type:Number,default:null},
     heightString:{type:String,default:null},
-    weightString:{type:String,default:null}
+    weightString:{type:String,default:null},
+    formType:{ type: mongoose.Schema.Types.ObjectId, ref: 'Form', unique: false, required: [false, 'No form found']}
 });
 
 pFileSchema.methods.serialize = function(){
