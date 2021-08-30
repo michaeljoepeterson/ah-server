@@ -26,7 +26,8 @@ pFileSchema.methods.serialize = function(){
         heightString:this.heightString,
         weightString:this.weightString,
         activityLevel:this.activityLevel,
-        patientId:this.patientId
+        patientId:this.patientId,
+        formType:this.formType
 	};
 }
 
