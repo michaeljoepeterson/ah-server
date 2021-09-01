@@ -11,7 +11,8 @@ var valueSchema = mongoose.Schema({
     numberValue:{type:Number, default:null},
     arrayValue:{type:Array, default:null},
     objectValue:{type:Object, default:null},
-    dateValue:{type:Date, default:null}
+    dateValue:{type:Date, default:null},
+    filePath:{type:String,default:null}
 }, { _id : false });
 
 //create standalone instance of field value when filling out form
